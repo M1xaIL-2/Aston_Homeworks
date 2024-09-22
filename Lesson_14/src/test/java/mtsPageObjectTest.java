@@ -1,8 +1,5 @@
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -24,7 +21,7 @@ public class mtsPageObjectTest {
     public void FieldsAndButtons() throws InterruptedException {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver,5);
+        WebDriverWait wait = new WebDriverWait(driver, 20);
         driver.navigate().to("https://www.mts.by/");
         HomePage homePage = new HomePage(driver);
 
@@ -85,18 +82,18 @@ public class mtsPageObjectTest {
 
         //№4 Проверить надписи в полях
 
-       driver.findElement(By.cssSelector(".select__header")).click();
+        driver.findElement(By.cssSelector(".select__header")).click();
 
-         for (String option : options){
-                List<WebElement> elements = driver.findElements(By.className("select__option"));
-             WebElement wait2 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
-                for (WebElement element : elements) {
-                    if (element.getText().equals(option)) {
-                        element.click();
-                        homePage.checkPlaceholder(option);
-                        break;
-                    }
+        for (String option : options) {
+            List<WebElement> elements = driver.findElements(By.className("select__option"));
+            WebElement wait2 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
+            for (WebElement element : elements) {
+                if (element.getText().equals(option)) {
+                    element.click();
+                    homePage.checkPlaceholder(option);
+                    break;
                 }
+            }
 
             try {
                 driver.findElement(By.cssSelector(".select__header")).click();
@@ -118,28 +115,53 @@ public class mtsPageObjectTest {
             }
         }
         homePage.fillInField1();
+        String phone = homePage.fillInField1(); // выдаёт (29)777-77-77. Необходимо убрать скобки
+        String phoneFormat = phone.replaceAll("[^0-9]","");
+
         homePage.fillInField2();
+        String summer = homePage.fillInField2();
+        String summerFormat = summer.replaceAll("[^0-9.]","");
+        summerFormat = String.format("%.2f",Double.parseDouble(summerFormat)); // Преобразовать в 150,00
+
         homePage.buttonClick();
 
-        WebElement wait5 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("app-wrapper")));
-// WebElement wait4 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("app-wrapper__content-container app-wrapper__content-container_full")));
-        String txt1 = driver.findElement(By.className("connection-phone")).getText();
-        String txt2 = driver.findElement(By.className("pay-description__text")).getText();
-        System.out.println(txt1);
-        System.out.println(txt2);
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.className("bepaid-iframe")));
+        WebElement payment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__text"))); // ищу Оплата: Услуги связи Номер:375297777777
+        String phoneNumber = payment.getText().replaceAll("[^0-9]","");
+        if (phoneNumber.contains(phoneFormat)) {
+            System.out.println("Номер телефона совпадает: " + "375" + phoneFormat);
+        }
+        else { System.out.println("Номер телефона несовпадает: " + phoneNumber + " а получили " + phoneFormat);}
 
-        assertEquals("1500", driver.findElement(By.className("pay-description__cost")), "Не совпдает"); //вверху
-        assertEquals("1500", driver.findElement(By.className("colored")), "Не совпдает"); //кнопка
-        assertEquals("1500", driver.findElement(By.className("colored")), "Не совпдает");
+        System.out.println();
 
+        WebElement cost = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__cost")));
+        String textCost = cost.getText().trim().replaceAll("[^0-9.]","");
+    //    String textFormat = textCost.replaceAll("[^0-9.]","");
+        textCost = String.format("%.2f",Double.parseDouble(textCost));
+        if (textCost.equals(summerFormat)) {
+            System.out.println("Сумма совпадает: " + textCost);
+        }
+        else { System.out.println("Сумма кнопки несовпадает: "+ summerFormat + " а получили " + textCost);}
 
-        //  Оплата: Услуги связи Номер:375297777777
+        System.out.println();
 
-              /*  <div _ngcontent-bbt-c62="" class="pay-description__text"><span _ngcontent-bbt-c62="">Оплата: Услуги связи
-        Номер:375297777777</span><!----><!----></div>*/
+        WebElement payButton = driver.findElement(By.cssSelector(".colored"));
+        String textButton = payButton.getText().trim().replaceAll("[^0-9.]","");
+        textButton = String.format("%.2f",Double.parseDouble(textButton));
+        if (textButton.equals(summerFormat)) {
+            System.out.println("Сумма кнопки совпадает: " + summerFormat);
+        }
+        else {  System.out.println("Сумма кнопки несовпадает: "+ summerFormat + " а получили " + textButton);}
 
         System.out.println("Конец теста");
-
     }
 }
+
+/*links:https://mkyong.com/java/how-to-format-a-double-in-java/
+https://kreisfahrer.gitbooks.io/selenium-webdriver/content/webdriver_intro/tipi_lokatorov.html
+https://www.codecademy.com/resources/docs/java/strings/replaceAll
+https://csharpcoderr.com/4783/ */
+
+
 

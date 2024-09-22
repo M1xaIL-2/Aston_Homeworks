@@ -82,18 +82,18 @@ public class HomePage {
         }
     }
 
-    public void fillInField1() {
-     /*   WebElement wait4 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
-        wait4.click();
-        WebElement var = (WebElement) driver.findElements(By.linkText("Услуги связи"));
-        var.click();*/
+    public String fillInField1() {
         driver.findElement(phone).click();
         driver.findElement(phone).sendKeys("297777777");
+        String txt1 = driver.findElement(phone).getAttribute("value");
+        return txt1;
     }
 
-    public void fillInField2() {
+    public String fillInField2() {
         driver.findElement(sum).click();
         driver.findElement(sum).sendKeys("1500");
+        String txt2 = driver.findElement(sum).getAttribute("value");
+        return txt2;
     }
 
     public void buttonClick() {

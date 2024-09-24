@@ -6,7 +6,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.TimeoutException;
 
 public class HomePage {
     By button = By.className("button__default");

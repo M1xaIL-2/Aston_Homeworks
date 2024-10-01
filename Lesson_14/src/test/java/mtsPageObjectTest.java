@@ -44,7 +44,7 @@ public class mtsPageObjectTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", driver.findElement(By.cssSelector(".pay__wrapper")));
 
         // №1 Проверить название указанного блока
-        assertEquals("Онлайн пополнение без комиссии", homePage.titleName());
+        assertEquals("Онлайн пополнение без комиссии", homePage.titleNameCheck());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class mtsPageObjectTest {
     public void c_linkTest() {
         // №3 ссылка "Подробнее о сервисе"
         homePage.serviceLink();
-        String currentUrl = driver.getCurrentUrl();
+       String currentUrl = driver.getCurrentUrl();
         assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", currentUrl);
         System.out.println("Переход по ссылке успешно проведён");
         //вернуться на сайт mts.by
@@ -101,7 +101,7 @@ public class mtsPageObjectTest {
 
         for (String option : options) {
             List<WebElement> elements = driver.findElements(By.className("select__option"));
-            WebElement wait2 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
             for (WebElement element : elements) {
                 if (element.getText().equals(option)) {
                     element.click();
@@ -116,15 +116,13 @@ public class mtsPageObjectTest {
                 // Игнорируем, если кнопка закрытия не найдена
             }
         }
-
         System.out.println();
     }
 
     @Test
-    public void e_FieldsAndButtons() {
+    public void e_FieldsAndButtonsTest() {
         //№5 Заполнить поля и проверить работу кнопки
-        WebElement wait3 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
-        wait3.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".select__header")));
         List<WebElement> elements = driver.findElements(By.className("select__option"));
         for (WebElement element : elements) {
             if (element.getText().equals("Услуги связи")) {
@@ -132,101 +130,38 @@ public class mtsPageObjectTest {
                 break;
             }
         }
-        homePage.fillInField1();
-        String phone = homePage.fillInField1(); // выдаёт (29)777-77-77. Необходимо убрать скобки
-        String phoneFormat = phone.replaceAll("[^0-9]", "");
 
-        homePage.fillInField2();
-        String summer = homePage.fillInField2();
-        String summerFormat = summer.replaceAll("[^0-9.]", "");
+        homePage.fillInPhoneNumber("297777777");
+        String phoneFormat = homePage.fillInPhoneNumber("297777777").replaceAll("[^0-9]", ""); // выдаёт (29)777-77-77. Необходимо убрать скобки
+
+        homePage.fillInSum("250");
+        String summerFormat = homePage.fillInSum("250").replaceAll("[^0-9.]", "");
         summerFormat = String.format("%.2f", Double.parseDouble(summerFormat)); // Преобразовать в 150,00
 
-        homePage.buttonClick();
+        homePage.continueButtonClick();
 
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.className("bepaid-iframe")));
-        WebElement payment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__text"))); // ищу Оплата: Услуги связи Номер:375297777777
-        String phoneNumber = payment.getText().replaceAll("[^0-9]", "");
-        if (phoneNumber.contains(phoneFormat)) {
-            System.out.println("Номер телефона совпадает: " + "375" + phoneFormat);
-        } else {
-            System.out.println("Номер телефона несовпадает: " + phoneNumber + " а получили " + phoneFormat);
-        }
+        homePage.frameToSwitch();
+        assertEquals("375" + phoneFormat, homePage.phoneNumberCheck());
 
         System.out.println();
 
-        WebElement cost = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pay-description__cost")));
-        String textCost = cost.getText().trim().replaceAll("[^0-9.]", "");
-        textCost = String.format("%.2f", Double.parseDouble(textCost));
-        if (textCost.equals(summerFormat)) {
-            System.out.println("Сумма совпадает: " + textCost);
-        } else {
-            System.out.println("Сумма кнопки несовпадает: " + summerFormat + " а получили " + textCost);
-        }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(homePage.pay));
+        assertEquals(homePage.payCheck(), summerFormat);
 
         System.out.println();
 
-        WebElement payButton = driver.findElement(By.cssSelector(".colored"));
-        String textButton = payButton.getText().trim().replaceAll("[^0-9.]", "");
-        textButton = String.format("%.2f", Double.parseDouble(textButton));
-        if (textButton.equals(summerFormat)) {
-            System.out.println("Сумма кнопки совпадает: " + summerFormat);
-        } else {
-            System.out.println("Сумма кнопки несовпадает: " + summerFormat + " а получили " + textButton);
-        }
+        assertEquals(homePage.buttonPayCheck(), summerFormat);
     }
 
     @Test
     public void f_fieldsOfCardTest() {
         //Л14_задание №2
-        String[] labels = {
-                "Номер карты", "Срок действия", "CVC",
-                "Имя держателя (как на карте)"
-        };
-
-        String[] classNames = {
-                "label.ng-tns-c46-1",
-                "label.ng-tns-c46-4",
-                "label.ng-tns-c46-5",
-                "label.ng-tns-c46-3"
-        };
-
-        for (int i = 0; i < labels.length; i++) {
-            for (int j = 0; j < classNames.length; j++) {
-                String cardPlaceholder = driver.findElement(By.cssSelector(classNames[j])).getText();
-                if (cardPlaceholder.equals(labels[i])) {
-                    System.out.println("Надпись в поле " + cardPlaceholder + " совпала с " + labels[i]);
-                    System.out.println();
-                }
-            }
-        }
+        homePage.fieldsOfCardCheck();
     }
 
     @Test
     public void g_cardImgTest() {
-
-        String[] cardLogos = {
-                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/visa-system.svg",
-                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/mastercard-system.svg",
-                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/belkart-system.svg",
-                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/maestro-system.svg",
-                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/mir-system-ru.svg"
-        };
-
-        String[] cardClassNames = {
-                "ng-tns-c61-0 ng-star-inserted",
-                "ng-tns-c61-0 ng-trigger ng-trigger-randomCardState ng-star-inserted ng-animating",
-        };
-
-        List<WebElement> cardImgElements = driver.findElements(By.cssSelector(".cards-brands img"));
-
-        for (String cardlogo : cardLogos) {
-            for (WebElement cardImg : cardImgElements) {
-                if (cardImg.getAttribute("src").equals(cardlogo)) {
-                    System.out.println("Логотип " + cardImg.getAttribute("src") + " совпадает с " + cardlogo);
-                    System.out.println();
-                }
-            }
-        }
+       homePage.cardImgCheckWithLogos();
     }
 }
 
@@ -238,8 +173,3 @@ https://www.testim.io/blog/selenium-scroll-to-element/ - скроллвниз к
 https://divancoder.ru/2017/07/junit-fixmethodorder/ - выполнение тестов по порядку.
 https://ru.stackoverflow.com/questions/1194019/%D0%A0%D0%B0%D0%B7%D0%BD%D0%B8%D1%86%D0%B0-%D0%BC%D0%B5%D0%B6%D0%B4%D1%83-before-%D0%B8-beforeclass-%D0%B2-junit-4
  */
-
-
-
-
-

@@ -5,6 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class HomePage {
@@ -12,7 +13,9 @@ public class HomePage {
     By blockTitle = By.xpath("//div[@class='pay__wrapper']/h2");
     By phone = By.id("connection-phone");
     By sum = By.id("connection-sum");
-
+    By pay = By.className("pay-description__cost");
+    By buttonPay = By.cssSelector(".colored");
+    By title = By.className("pay-description__text");
 
     private String[] checks = {
             "Номер телефона", "Сумма", "E-mail для отправки чека",
@@ -42,9 +45,26 @@ public class HomePage {
         }
     }
 
-    public String titleName() {
+    public String titleNameCheck() {
         WebElement title = driver.findElement(blockTitle);
         return title.getText().replace("\n", " ").trim();
+    }
+
+    public String phoneNumberCheck() {
+        WebElement payment = wait.until(ExpectedConditions.visibilityOfElementLocated(title)); // ищу Оплата: Услуги связи Номер:375297777777
+        return payment.getText().replaceAll("[^0-9]", "");
+    }
+
+    public String payCheck() {
+        WebElement cost = driver.findElement(pay);
+        String textCost = cost.getText().trim().replaceAll("[^0-9.]", "");
+        return String.format("%.2f", Double.parseDouble(textCost));
+    }
+
+    public String buttonPayCheck() {
+        WebElement payButton = driver.findElement(buttonPay);
+        String textButton = payButton.getText().trim().replaceAll("[^0-9.]", "");
+        return String.format("%.2f", Double.parseDouble(textButton));
     }
 
     public void serviceLink() {
@@ -81,21 +101,69 @@ public class HomePage {
         }
     }
 
-    public String fillInField1() {
+    public String fillInPhoneNumber(String value) {
         driver.findElement(phone).click();
-        driver.findElement(phone).sendKeys("297777777");
+        driver.findElement(phone).sendKeys(value);
         String txt1 = driver.findElement(phone).getAttribute("value");
         return txt1;
     }
 
-    public String fillInField2() {
+    public String fillInSum(String value) {
         driver.findElement(sum).click();
-        driver.findElement(sum).sendKeys("1500");
+        driver.findElement(sum).sendKeys(value);
         String txt2 = driver.findElement(sum).getAttribute("value");
         return txt2;
     }
 
-    public void buttonClick() {
+    public void continueButtonClick() {
         driver.findElement(button).click();
+    }
+
+    public void frameToSwitch() {
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.className("bepaid-iframe")));
+    }
+
+    public void fieldsOfCardCheck() {
+        String[] labels = {
+                "Номер карты", "Срок действия", "CVC",
+                "Имя держателя (как на карте)"
+        };
+
+        String[] classNames = {
+                "label.ng-tns-c46-1",
+                "label.ng-tns-c46-4",
+                "label.ng-tns-c46-5",
+                "label.ng-tns-c46-3"
+        };
+
+        for (int i = 0; i < labels.length; i++) {
+            for (int j = 0; j < classNames.length; j++) {
+                String cardPlaceholder = driver.findElement(By.cssSelector(classNames[j])).getText();
+                if (cardPlaceholder.equals(labels[i])) {
+                    System.out.println("Надпись в поле " + cardPlaceholder + " совпала с " + labels[i]);
+                    System.out.println();
+                }
+            }
+        }
+    }
+
+    public void cardImgCheckWithLogos() {
+        String[] cardLogos = {
+                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/visa-system.svg",
+                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/mastercard-system.svg",
+                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/belkart-system.svg",
+                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/maestro-system.svg",
+                "https://checkout.bepaid.by/widget_v2/assets/images/payment-icons/card-types/mir-system-ru.svg"
+        };
+
+        List<WebElement> cardImgElements = driver.findElements(By.cssSelector(".cards-brands img"));
+        for (String cardlogo : cardLogos) {
+            for (WebElement cardImg : cardImgElements) {
+                if (cardImg.getAttribute("src").equals(cardlogo)) {
+                    System.out.println("Логотип " + cardImg.getAttribute("src") + " совпадает с " + cardlogo);
+                    System.out.println();
+                }
+            }
+        }
     }
 }

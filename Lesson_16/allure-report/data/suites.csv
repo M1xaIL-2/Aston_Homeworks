@@ -1,0 +1,7 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1034","d_captionFieldTest","","Wed Oct 02 19:31:33 SAMT 2024","passed","Wed Oct 02 19:31:34 SAMT 2024","","mtsPageObjectTest","mtsPageObjectTest","d_captionFieldTest"
+"Проверить выпадающий список; Заполнить поля,  проверить работу кнопки, а также сравнить полученные данные (телефон, сумма)","3485","e_FieldsAndButtons","","Wed Oct 02 19:31:34 SAMT 2024","passed","Wed Oct 02 19:31:37 SAMT 2024","","mtsPageObjectTest","mtsPageObjectTest","e_FieldsAndButtons"
+"","474","g_cardImgTest","","Wed Oct 02 19:31:38 SAMT 2024","passed","Wed Oct 02 19:31:38 SAMT 2024","","mtsPageObjectTest","mtsPageObjectTest","g_cardImgTest"
+"Проверить правильность названия блока (Онлайн пополнение без комиссии)","494","b_logoCheckTest","","Wed Oct 02 19:31:30 SAMT 2024","passed","Wed Oct 02 19:31:31 SAMT 2024","","mtsPageObjectTest","mtsPageObjectTest","b_logoCheckTest"
+"","252","f_fieldsOfCardTest","","Wed Oct 02 19:31:37 SAMT 2024","passed","Wed Oct 02 19:31:38 SAMT 2024","","mtsPageObjectTest","mtsPageObjectTest","f_fieldsOfCardTest"
+"","1635","c_linkTest","","Wed Oct 02 19:31:31 SAMT 2024","passed","Wed Oct 02 19:31:33 SAMT 2024","","mtsPageObjectTest","mtsPageObjectTest","c_linkTest"

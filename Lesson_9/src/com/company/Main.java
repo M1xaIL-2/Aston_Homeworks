@@ -3,7 +3,6 @@ package com.company;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
         Scanner chislo = new Scanner(System.in);
         Cat[] catAnimal = new Cat[3];
@@ -31,15 +30,38 @@ public class Main {
         System.out.println("Всего кошек:" + Cat.getCatCount());
         System.out.println("Общее количество собак:" + Dog.getDogCount());
 
-        CatBowl bowl = new CatBowl(100);
-
+        CatBowl bowl = new CatBowl(20);
 
         for (int i = 0; i < catAnimal.length; i++) {
             catAnimal[i].eat(bowl);
             System.out.println(catAnimal[i].getName() + " сытый: " + catAnimal[i].satiety());
-            bowl.getFoodAmount();
+            System.out.println("Еды осталось в миске: " + bowl.getFoodAmount());
+            System.out.println();
         }
 
         bowl.addFood(50);
+        System.out.println();
+
+       forma(); // вызывается метод forma
     }
+
+    public static void forma () {
+        Figure circle = new Circle(5, "Red", "Black");
+        Figure triangle = new Triangle(3, 4, 5, "Green", "Blue");
+        Figure rectangle = new Rectangle(4, 6, "Yellow", "Purple");
+
+        printFigureDetails(circle);
+        printFigureDetails(triangle);
+        printFigureDetails(rectangle);
+    }
+
+        private static void printFigureDetails(Figure shape) {
+            System.out.println("Фигура: " + shape.getClass().getSimpleName());
+            System.out.println("Цвет заливки: " + shape.getFillColor());
+            System.out.println("Цвет границы: " + shape.getBorderColor());
+            System.out.println("Периметр: " + shape.calculatePerimeter());
+            System.out.println("Площадь: " + shape.calculateArea());
+            System.out.println();
+        }
 }
+
